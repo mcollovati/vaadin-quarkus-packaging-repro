@@ -21,6 +21,9 @@ dependencies {
     // probe-extension. See README.
     implementation("org.acme:packaging-probe:1.0-SNAPSHOT")
 
+    // enforcedPlatform, not platform: vaadin-bom also constrains the Flow
+    // artifacts, and a plain platform would lose against it
+    implementation enforcedPlatform("com.vaadin:flow-bom:$flowVersion")
     implementation platform("com.vaadin:vaadin-bom:$vaadinVersion")
     implementation platform("io.quarkus:quarkus-bom:$quarkusVersion")
 
@@ -29,4 +32,16 @@ dependencies {
     // Uncomment the following if you are using any of the Pro components
     // implementation("com.vaadin:vaadin")
     // implementation("com.vaadin:vaadin-jandex")
+}
+
+// Run against a locally built extension with
+// ./gradlew quarkusBuild -PvaadinQuarkusVersion=3.2-SNAPSHOT. mavenLocal() is
+// already first in the repository list, but the version has to be forced
+// because the extension is pulled in through the platform artifact.
+if (findProperty('vaadinQuarkusVersion')) {
+    configurations.all {
+        resolutionStrategy.force(
+                "com.vaadin:vaadin-quarkus:$vaadinQuarkusVersion",
+                "com.vaadin:vaadin-quarkus-deployment:$vaadinQuarkusVersion")
+    }
 }

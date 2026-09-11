@@ -25,6 +25,27 @@ flags_for() {
     esac
 }
 
+# Version overrides, so the matrix can run against a locally built extension.
+# See "Running against a local snapshot" in the README.
+overrides_for() {
+    local overrides=""
+    if [ -n "${VAADIN_QUARKUS_VERSION:-}" ]; then
+        if [ "$1" = gradle ]; then
+            overrides="-PvaadinQuarkusVersion=$VAADIN_QUARKUS_VERSION"
+        else
+            overrides="-Dvaadin.quarkus.version=$VAADIN_QUARKUS_VERSION"
+        fi
+    fi
+    if [ -n "${FLOW_VERSION:-}" ]; then
+        if [ "$1" = gradle ]; then
+            overrides="$overrides -PflowVersion=$FLOW_VERSION"
+        else
+            overrides="$overrides -Dvaadin.flow.version=$FLOW_VERSION"
+        fi
+    fi
+    echo "$overrides"
+}
+
 install_probe() {
     echo "==> installing the probe extension"
     (cd "$root_dir/probe-extension" && mvn -q -B install -DskipTests) \
@@ -46,10 +67,10 @@ for case_name in $cases; do
         log=$(mktemp)
         if [ "$case_name" = gradle ]; then
             (cd "$case_dir" && ./gradlew --no-daemon clean quarkusBuild \
-                $(flags_for "$jar_type")) >"$log" 2>&1
+                $(flags_for "$jar_type") $(overrides_for gradle)) >"$log" 2>&1
         else
             (cd "$case_dir" && mvn -B clean package -DskipTests \
-                $(flags_for "$jar_type")) >"$log" 2>&1
+                $(flags_for "$jar_type") $(overrides_for maven)) >"$log" 2>&1
         fi
         status=$?
 

@@ -94,6 +94,48 @@ without needing GraalVM, together with `quarkus.package.jar.enabled=false`,
 without which the Gradle plugin refuses to emit a native and a JAR package in the
 same build.
 
+## Running against a local snapshot
+
+The cases are pinned to released versions so that the results are reproducible.
+To run them against an extension built from a `vaadin/quarkus` checkout instead:
+
+```bash
+# 1. install the extension, parent pom included
+cd <your vaadin/quarkus checkout>
+mvn -N install -DskipTests                        # the parent pom
+mvn -pl runtime,deployment install -DskipTests    # installs 3.2-SNAPSHOT
+
+# 2. run any case against it
+cd <this repository>
+VAADIN_QUARKUS_VERSION=3.2-SNAPSHOT FLOW_VERSION=25.2-SNAPSHOT ./run-all.sh maven-jar
+```
+
+`mvn -N install` is not optional: the application has to resolve
+`vaadin-quarkus-parent` when it reads the extension's pom, and without it the
+build fails with "Could not find artifact com.vaadin:vaadin-quarkus-parent".
+
+`FLOW_VERSION` has to match the Flow version the extension was built against,
+which its parent pom declares as `vaadin.flow.version`. If they differ, the
+build fails during the frontend build with a `NoSuchMethodError` from
+`flow-plugin-base`, because that comes from the extension while `flow-server`
+comes from the application. The Vaadin prereleases repository is already
+declared, so a Flow snapshot is downloaded if it is not built locally.
+
+Both variables are passed to a single project as well:
+
+```bash
+cd maven-jar
+mvn clean package -DskipTests \
+    -Dvaadin.quarkus.version=3.2-SNAPSHOT -Dvaadin.flow.version=25.2-SNAPSHOT
+
+cd ../gradle
+./gradlew clean quarkusBuild \
+    -PvaadinQuarkusVersion=3.2-SNAPSHOT -PflowVersion=25.2-SNAPSHOT
+```
+
+The `emitter-removal/` applications take `-Dvaadin.quarkus.version` in the same
+way, and `run.sh` sets it by itself for the variants it builds.
+
 ## Results
 
 | case | jar type | build | archive root | predicate | emitter |

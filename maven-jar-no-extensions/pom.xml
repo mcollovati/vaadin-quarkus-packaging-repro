@@ -21,6 +21,11 @@
 
         <vaadin.version>25.2.6</vaadin.version>
 
+        <!-- Override these to run against a locally built extension, see the
+             "Running against a local snapshot" section of the README. -->
+        <vaadin.quarkus.version>3.2.1</vaadin.quarkus.version>
+        <vaadin.flow.version>${vaadin.version}</vaadin.flow.version>
+
         <quarkus.platform.version>3.33.0</quarkus.platform.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
 
@@ -42,6 +47,24 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Imported before vaadin-bom so that vaadin.flow.version wins -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-quarkus</artifactId>
+                <version>${vaadin.quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-quarkus-deployment</artifactId>
+                <version>${vaadin.quarkus.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
