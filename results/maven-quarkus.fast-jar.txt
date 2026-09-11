@@ -16,7 +16,18 @@ PROBE|emittedFile=META-INF/PROBE/emitted.txt
 PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes/META-INF/PROBE/late.txt
 
 --- archives ---
-target/quarkus-app/app/packaging-repro-maven-quarkus-1.0-SNAPSHOT.jar          VAADIN=197   late=1   emitted=0
-target/quarkus-app/quarkus/generated-bytecode.jar                              VAADIN=197   late=0   emitted=1
+target/quarkus-app/app/packaging-repro-maven-quarkus-1.0-SNAPSHOT.jar          VAADIN=20    late=1   emitted=0
+target/quarkus-app/quarkus/generated-bytecode.jar                              VAADIN=20    late=0   emitted=1
 target/quarkus-app/quarkus-run.jar                                             VAADIN=0     late=0   emitted=0
 target/quarkus-app/quarkus/transformed-bytecode.jar                            VAADIN=0     late=0   emitted=0
+
+--- single copy ---
+15 file(s) packaged more than once, for example:
+  META-INF/VAADIN/config/bundle-size.html
+    target/quarkus-app/app/packaging-repro-maven-quarkus-1.0-SNAPSHOT.jar,target/quarkus-app/quarkus/generated-bytecode.jar
+  META-INF/VAADIN/config/flow-build-info.json
+    target/quarkus-app/app/packaging-repro-maven-quarkus-1.0-SNAPSHOT.jar,target/quarkus-app/quarkus/generated-bytecode.jar
+  META-INF/VAADIN/config/stats.json
+    target/quarkus-app/app/packaging-repro-maven-quarkus-1.0-SNAPSHOT.jar,target/quarkus-app/quarkus/generated-bytecode.jar
+flow-build-info.json is in 2 archive(s), expected 1
+single copy: FAIL

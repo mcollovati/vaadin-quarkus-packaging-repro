@@ -4,8 +4,8 @@ set -u
 
 root_dir="$(cd "$(dirname "$0")" && pwd)"
 
-printf '| case | jar type | build | archive root | predicate | emitter |\n'
-printf '|---|---|---|---|---|---|\n'
+printf '| case | jar type | build | archive root | predicate | emitter | single copy |\n'
+printf '|---|---|---|---|---|---|---|\n'
 
 for report in "$root_dir"/results/*.txt; do
     [ -e "$report" ] || continue
@@ -29,6 +29,15 @@ for report in "$root_dir"/results/*.txt; do
     fi
     [ "$build" = FAILURE ] && { predicate="${predicate:--}"; emitter='-'; }
 
-    printf '| %s | %s | %s | %s | %s | %s |\n' \
-        "$case_name" "$jar_type" "$build" "$root_kind" "${predicate:--}" "$emitter"
+    # Written into the report by verify-single-copy.sh: whether every file of
+    # the Vaadin bundle is in exactly one archive of the packaged application.
+    # This is the column that says whether the fix works; the others describe
+    # the packaging shape the build landed in.
+    single_copy=$(awk '/^single copy:/ {print $3}' "$report")
+    # A build that failed packaged nothing, so it has no verdict to report
+    [ "$build" = FAILURE ] && single_copy='-'
+
+    printf '| %s | %s | %s | %s | %s | %s | %s |\n' \
+        "$case_name" "$jar_type" "$build" "$root_kind" "${predicate:--}" \
+        "$emitter" "${single_copy:--}"
 done

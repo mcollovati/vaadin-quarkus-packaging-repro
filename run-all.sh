@@ -84,6 +84,9 @@ for case_name in $cases; do
             echo
             echo "--- archives ---"
             "$root_dir/inspect.sh" "$case_dir"
+            echo
+            echo "--- single copy ---"
+            "$root_dir/verify-single-copy.sh" "$case_dir"
             if [ $status -ne 0 ]; then
                 echo
                 echo "--- build failure ---"
@@ -92,7 +95,8 @@ for case_name in $cases; do
         } >"$report"
 
         rm -f "$log"
-        sed -n '1,3p' "$report" | tr '\n' ' '
+        { sed -n '1,3p' "$report"; grep '^single copy:' "$report"; } \
+            | tr '\n' ' '
         echo
     done
 done

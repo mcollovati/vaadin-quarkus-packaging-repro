@@ -16,4 +16,7 @@ PROBE|emittedFile=META-INF/PROBE/emitted.txt
 PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-extensions/target/classes/META-INF/PROBE/late.txt
 
 --- archives ---
-target/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT-runner.jar         VAADIN=197   late=0   emitted=1
+target/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT-runner.jar         VAADIN=20    late=0   emitted=1
+
+--- single copy ---
+single copy: PASS (15 files, each in one archive)

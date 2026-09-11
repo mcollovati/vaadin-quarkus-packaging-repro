@@ -121,6 +121,10 @@ for variant in $variants; do
 done
 
 reset_sources
-(cd "$src" && mvn -q -B versions:set -DnewVersion=3.2.1 -DgenerateBackupPoms=false)
+# Left at a version of its own, not at 3.2.1: a later "mvn install" in the
+# checkout would otherwise overwrite the released artifact in the local Maven
+# repository, and every default build would silently use the patched extension.
+(cd "$src" && mvn -q -B versions:set -DnewVersion=3.2.1-workdir \
+        -DgenerateBackupPoms=false)
 echo
 echo "reports written to $reports"

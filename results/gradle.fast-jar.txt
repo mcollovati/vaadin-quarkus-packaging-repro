@@ -20,15 +20,26 @@ PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/reso
 
 --- archives ---
 build/libs/packaging-repro-gradle.jar                                          VAADIN=0     late=0   emitted=0
-build/quarkus-app/app/packaging-repro-gradle-unspecified.jar                   VAADIN=197   late=1   emitted=0
-build/quarkus-app/quarkus/generated-bytecode.jar                               VAADIN=197   late=0   emitted=1
+build/quarkus-app/app/packaging-repro-gradle-unspecified.jar                   VAADIN=20    late=1   emitted=0
+build/quarkus-app/quarkus/generated-bytecode.jar                               VAADIN=20    late=0   emitted=1
 build/quarkus-app/quarkus-run.jar                                              VAADIN=0     late=0   emitted=0
 build/quarkus-app/quarkus/transformed-bytecode.jar                             VAADIN=0     late=0   emitted=0
-build/quarkus-build/app/quarkus-app/app/packaging-repro-gradle-unspecified.jar VAADIN=197   late=1   emitted=0
-build/quarkus-build/app/quarkus-app/quarkus/generated-bytecode.jar             VAADIN=197   late=0   emitted=1
+build/quarkus-build/app/quarkus-app/app/packaging-repro-gradle-unspecified.jar VAADIN=20    late=1   emitted=0
+build/quarkus-build/app/quarkus-app/quarkus/generated-bytecode.jar             VAADIN=20    late=0   emitted=1
 build/quarkus-build/app/quarkus-app/quarkus-run.jar                            VAADIN=0     late=0   emitted=0
 build/quarkus-build/app/quarkus-app/quarkus/transformed-bytecode.jar           VAADIN=0     late=0   emitted=0
-build/quarkus-build/gen/quarkus-app/app/packaging-repro-gradle-unspecified.jar VAADIN=197   late=1   emitted=0
-build/quarkus-build/gen/quarkus-app/quarkus/generated-bytecode.jar             VAADIN=197   late=0   emitted=1
+build/quarkus-build/gen/quarkus-app/app/packaging-repro-gradle-unspecified.jar VAADIN=20    late=1   emitted=0
+build/quarkus-build/gen/quarkus-app/quarkus/generated-bytecode.jar             VAADIN=20    late=0   emitted=1
 build/quarkus-build/gen/quarkus-app/quarkus-run.jar                            VAADIN=0     late=0   emitted=0
 build/quarkus-build/gen/quarkus-app/quarkus/transformed-bytecode.jar           VAADIN=0     late=0   emitted=0
+
+--- single copy ---
+15 file(s) packaged more than once, for example:
+  META-INF/VAADIN/config/bundle-size.html
+    build/quarkus-app/app/packaging-repro-gradle-unspecified.jar,build/quarkus-app/quarkus/generated-bytecode.jar
+  META-INF/VAADIN/config/flow-build-info.json
+    build/quarkus-app/app/packaging-repro-gradle-unspecified.jar,build/quarkus-app/quarkus/generated-bytecode.jar
+  META-INF/VAADIN/config/stats.json
+    build/quarkus-app/app/packaging-repro-gradle-unspecified.jar,build/quarkus-app/quarkus/generated-bytecode.jar
+flow-build-info.json is in 2 archive(s), expected 1
+single copy: FAIL

@@ -18,6 +18,9 @@ PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-exte
 --- archives ---
 target/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT.jar                VAADIN=0     late=0   emitted=0
 target/quarkus-app/app/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT.jar VAADIN=0     late=0   emitted=0
-target/quarkus-app/quarkus/generated-bytecode.jar                              VAADIN=197   late=0   emitted=1
+target/quarkus-app/quarkus/generated-bytecode.jar                              VAADIN=20    late=0   emitted=1
 target/quarkus-app/quarkus-run.jar                                             VAADIN=0     late=0   emitted=0
 target/quarkus-app/quarkus/transformed-bytecode.jar                            VAADIN=0     late=0   emitted=0
+
+--- single copy ---
+single copy: PASS (15 files, each in one archive)

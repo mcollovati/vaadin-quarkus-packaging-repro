@@ -81,9 +81,10 @@ same thing for the real Vaadin bundle.
 ## Running it
 
 ```bash
-./run-all.sh                 # every case against every jar type
-./run-all.sh maven-jar       # or just some of them
-./summarize.sh               # condense results/ into one table
+./run-all.sh                        # every case against every jar type
+./run-all.sh maven-jar              # or just some of them
+./summarize.sh                      # condense results/ into one table
+./verify-single-copy.sh maven-jar   # check one built application
 ```
 
 `run-all.sh` installs the probe extension into the local Maven repository first.
@@ -138,39 +139,74 @@ way, and `run.sh` sets it by itself for the variants it builds.
 
 ## Results
 
-| case | jar type | build | archive root | predicate | emitter |
-|---|---|---|---|---|---|
-| gradle | fast-jar | SUCCESS | directory | true | redundant |
-| gradle | legacy-jar | SUCCESS | directory | true | redundant |
-| gradle | mutable-jar | SUCCESS | directory | true | redundant |
-| gradle | native-sources | SUCCESS | directory | true | redundant |
-| gradle | uber-jar | SUCCESS | directory | true | redundant |
-| maven-jar | fast-jar | SUCCESS | directory | true | redundant |
-| maven-jar | legacy-jar | SUCCESS | directory | true | redundant |
-| maven-jar | mutable-jar | SUCCESS | directory | true | redundant |
-| maven-jar | native-sources | SUCCESS | directory | true | redundant |
-| maven-jar | uber-jar | SUCCESS | directory | true | redundant |
-| maven-jar-no-extensions | fast-jar | SUCCESS | archive | false | required |
-| maven-jar-no-extensions | legacy-jar | SUCCESS | archive | false | required |
-| maven-jar-no-extensions | mutable-jar | SUCCESS | archive | false | required |
-| maven-jar-no-extensions | native-sources | SUCCESS | archive | false | required |
-| maven-jar-no-extensions | uber-jar | SUCCESS | archive | false | required |
-| maven-jar-no-generate-code | fast-jar | FAILURE | archive | false | - |
-| maven-jar-no-generate-code | legacy-jar | FAILURE | archive | false | - |
-| maven-jar-no-generate-code | mutable-jar | FAILURE | archive | false | - |
-| maven-jar-no-generate-code | native-sources | FAILURE | archive | false | - |
-| maven-jar-no-generate-code | uber-jar | FAILURE | archive | false | - |
-| maven-quarkus | fast-jar | SUCCESS | directory | true | redundant |
-| maven-quarkus | legacy-jar | SUCCESS | directory | true | redundant |
-| maven-quarkus | mutable-jar | SUCCESS | directory | true | redundant |
-| maven-quarkus | native-sources | SUCCESS | directory | true | redundant |
-| maven-quarkus | uber-jar | SUCCESS | directory | true | redundant |
+| case | jar type | build | archive root | predicate | emitter | single copy |
+|---|---|---|---|---|---|---|
+| gradle | fast-jar | SUCCESS | directory | true | redundant | FAIL |
+| gradle | legacy-jar | SUCCESS | directory | true | redundant | FAIL |
+| gradle | mutable-jar | SUCCESS | directory | true | redundant | FAIL |
+| gradle | native-sources | SUCCESS | directory | true | redundant | FAIL |
+| gradle | uber-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-jar | fast-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-jar | legacy-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-jar | mutable-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-jar | native-sources | SUCCESS | directory | true | redundant | FAIL |
+| maven-jar | uber-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-jar-no-extensions | fast-jar | SUCCESS | archive | false | required | PASS |
+| maven-jar-no-extensions | legacy-jar | SUCCESS | archive | false | required | PASS |
+| maven-jar-no-extensions | mutable-jar | SUCCESS | archive | false | required | PASS |
+| maven-jar-no-extensions | native-sources | SUCCESS | archive | false | required | PASS |
+| maven-jar-no-extensions | uber-jar | SUCCESS | archive | false | required | PASS |
+| maven-jar-no-generate-code | fast-jar | FAILURE | archive | false | - | - |
+| maven-jar-no-generate-code | legacy-jar | FAILURE | archive | false | - | - |
+| maven-jar-no-generate-code | mutable-jar | FAILURE | archive | false | - | - |
+| maven-jar-no-generate-code | native-sources | FAILURE | archive | false | - | - |
+| maven-jar-no-generate-code | uber-jar | FAILURE | archive | false | - | - |
+| maven-quarkus | fast-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-quarkus | legacy-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-quarkus | mutable-jar | SUCCESS | directory | true | redundant | FAIL |
+| maven-quarkus | native-sources | SUCCESS | directory | true | redundant | FAIL |
+| maven-quarkus | uber-jar | SUCCESS | directory | true | redundant | FAIL |
 
-"emitter: redundant" means an archive carried the bundle without the emitter
-having put it there. "required" means the emitted copy was the only one.
+These results are from the released extension, which has the bug. "emitter:
+redundant" means an archive carried the bundle without the emitter having put it
+there, and every one of those rows also reports `single copy: FAIL`, because the
+emitted copy is a second one. "required" means the emitted copy was the only
+one, so those rows pass.
 
 The predicate agrees with the outcome in every cell, including the five where
-the build fails before packaging.
+the build fails before packaging and has no packaged application to check.
+
+### Reading the results: the `single copy` column
+
+`single copy` is the column that says whether the packaging is correct. The
+other columns describe the shape the build landed in; they look the same
+whether or not the extension is fixed, because they are computed from the probe
+extension, which always emits.
+
+`verify-single-copy.sh` produces it, and it can also be run on its own after a
+build:
+
+```bash
+./verify-single-copy.sh maven-jar
+```
+
+It compares entry names across the archives of the packaged application, not
+counts, and checks three things:
+
+1. no file under `META-INF/VAADIN` is in more than one archive
+2. `flow-build-info.json` is in exactly one archive - zero copies breaks a
+   production start and is invisible in the counts
+3. the application has a bundle at all
+
+Counting per archive is not enough. With the fix, a Maven application shows 20
+entries in the application jar and 1 in `generated-bytecode.jar`, while the
+same application built from a sealed jar shows 0 and 20. Those are the same set
+of files, and directory entries are counted in both archives, so the numbers do
+not add up in the way one would expect.
+
+**With the released extension the duplicating shapes report `FAIL`. That is the
+bug this repository reproduces**, not a broken checkout. Run the cases against
+a fixed build, as described above, and they report `PASS`.
 
 ## Removing the emitter for real
 

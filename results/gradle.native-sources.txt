@@ -20,4 +20,15 @@ PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/reso
 
 --- archives ---
 build/libs/packaging-repro-gradle.jar                                          VAADIN=0     late=0   emitted=0
-build/native-sources/packaging-repro-gradle-unspecified-runner.jar             VAADIN=387   late=1   emitted=1
+build/native-sources/packaging-repro-gradle-unspecified-runner.jar             VAADIN=35    late=1   emitted=1
+
+--- single copy ---
+15 file(s) packaged more than once, for example:
+  META-INF/VAADIN/config/bundle-size.html
+    build/native-sources/packaging-repro-gradle-unspecified-runner.jar,build/native-sources/packaging-repro-gradle-unspecified-runner.jar
+  META-INF/VAADIN/config/flow-build-info.json
+    build/native-sources/packaging-repro-gradle-unspecified-runner.jar,build/native-sources/packaging-repro-gradle-unspecified-runner.jar
+  META-INF/VAADIN/config/stats.json
+    build/native-sources/packaging-repro-gradle-unspecified-runner.jar,build/native-sources/packaging-repro-gradle-unspecified-runner.jar
+flow-build-info.json is in 2 archive(s), expected 1
+single copy: FAIL

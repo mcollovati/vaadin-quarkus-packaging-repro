@@ -18,6 +18,11 @@ PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-gene
 --- archives ---
 target/packaging-repro-maven-jar-no-generate-code-1.0-SNAPSHOT.jar             VAADIN=0     late=0   emitted=0
 
+--- single copy ---
+flow-build-info.json is in 0 archive(s), expected 1
+no META-INF/VAADIN files in the packaged application
+single copy: FAIL
+
 --- build failure ---
 [ERROR] Failed to execute goal io.quarkus:quarkus-maven-plugin:3.33.0:build (default) on project packaging-repro-maven-jar-no-generate-code: Failed to build quarkus application: io.quarkus.builder.BuildException: Build failure: Build failed due to errors
 [ERROR] 	[error]: Build step com.vaadin.quarkus.deployment.VaadinQuarkusProcessor#buildFrontendTask threw an exception: java.lang.NullPointerException: Cannot invoke "io.quarkus.bootstrap.workspace.WorkspaceModule.getModuleDir()" because "appModule" is null
