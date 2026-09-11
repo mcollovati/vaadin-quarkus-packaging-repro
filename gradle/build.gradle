@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+defaultTasks("quarkusDev")
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
+}
+
+dependencies {
+    // The packaging probe, installed into the local Maven repository by
+    // probe-extension. See README.
+    implementation("org.acme:packaging-probe:1.0-SNAPSHOT")
+
+    implementation platform("com.vaadin:vaadin-bom:$vaadinVersion")
+    implementation platform("io.quarkus:quarkus-bom:$quarkusVersion")
+
+    // Vaadin
+    implementation("com.vaadin:vaadin-quarkus-extension:$vaadinVersion")
+    // Uncomment the following if you are using any of the Pro components
+    // implementation("com.vaadin:vaadin")
+    // implementation("com.vaadin:vaadin-jandex")
+}

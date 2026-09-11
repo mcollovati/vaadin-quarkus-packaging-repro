@@ -1,0 +1,19 @@
+case:     maven-jar-no-extensions
+jar type: uber-jar
+build:    SUCCESS
+
+--- probe ---
+PROBE|jarType=uber-jar
+PROBE|jarTypeUsesFastJarLayout=false
+PROBE|outputTargetDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-extensions/target
+PROBE|appArtifactPaths=[paths: /tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-extensions/target/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT.jar;]
+PROBE|archiveRootResolvedPath=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-extensions/target/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT.jar isDirectory=false
+PROBE|archiveRootDirectory=/ fileSystem=ZipFileSystem
+PROBE|workspaceModule=<absent, falling back to output target>
+PROBE|resourcesOutputDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-extensions/target/classes
+PROBE|predicateRootArchiveIncludesOutput=false
+PROBE|emittedFile=META-INF/PROBE/emitted.txt
+PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-extensions/target/classes/META-INF/PROBE/late.txt
+
+--- archives ---
+target/packaging-repro-maven-jar-no-extensions-1.0-SNAPSHOT-runner.jar         VAADIN=197   late=0   emitted=1

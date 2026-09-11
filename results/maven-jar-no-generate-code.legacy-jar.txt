@@ -1,0 +1,41 @@
+case:     maven-jar-no-generate-code
+jar type: legacy-jar
+build:    FAILURE
+
+--- probe ---
+PROBE|jarType=legacy-jar
+PROBE|jarTypeUsesFastJarLayout=false
+PROBE|outputTargetDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-generate-code/target
+PROBE|appArtifactPaths=[paths: /tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-generate-code/target/packaging-repro-maven-jar-no-generate-code-1.0-SNAPSHOT.jar;]
+PROBE|archiveRootResolvedPath=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-generate-code/target/packaging-repro-maven-jar-no-generate-code-1.0-SNAPSHOT.jar isDirectory=false
+PROBE|archiveRootDirectory=/ fileSystem=ZipFileSystem
+PROBE|workspaceModule=<absent, falling back to output target>
+PROBE|resourcesOutputDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-generate-code/target/classes
+PROBE|predicateRootArchiveIncludesOutput=false
+PROBE|emittedFile=META-INF/PROBE/emitted.txt
+PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-jar-no-generate-code/target/classes/META-INF/PROBE/late.txt
+
+--- archives ---
+target/packaging-repro-maven-jar-no-generate-code-1.0-SNAPSHOT.jar             VAADIN=0     late=0   emitted=0
+
+--- build failure ---
+[ERROR] Failed to execute goal io.quarkus:quarkus-maven-plugin:3.33.0:build (default) on project packaging-repro-maven-jar-no-generate-code: Failed to build quarkus application: io.quarkus.builder.BuildException: Build failure: Build failed due to errors
+[ERROR] 	[error]: Build step com.vaadin.quarkus.deployment.VaadinQuarkusProcessor#buildFrontendTask threw an exception: java.lang.NullPointerException: Cannot invoke "io.quarkus.bootstrap.workspace.WorkspaceModule.getModuleDir()" because "appModule" is null
+[ERROR] 	at com.vaadin.quarkus.deployment.vaadinplugin.QuarkusPluginAdapter.<init>(QuarkusPluginAdapter.java:94)
+[ERROR] 	at com.vaadin.quarkus.deployment.vaadinplugin.VaadinPlugin.<init>(VaadinPlugin.java:72)
+[ERROR] 	at com.vaadin.quarkus.deployment.vaadinplugin.VaadinPlugin.of(VaadinPlugin.java:107)
+[ERROR] 	at com.vaadin.quarkus.deployment.VaadinQuarkusProcessor.buildFrontendTask(VaadinQuarkusProcessor.java:366)
+[ERROR] 	at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(MethodHandle.java:733)
+[ERROR] 	at io.quarkus.deployment.ExtensionLoader$3.execute(ExtensionLoader.java:898)
+[ERROR] 	at io.quarkus.builder.BuildContext.run(BuildContext.java:242)
+[ERROR] 	at org.jboss.threads.ContextHandler$1.runWith(ContextHandler.java:18)
+[ERROR] 	at org.jboss.threads.EnhancedQueueExecutor$Task.doRunWith(EnhancedQueueExecutor.java:2651)
+[ERROR] 	at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2630)
+[ERROR] 	at org.jboss.threads.EnhancedQueueExecutor.runThreadBody(EnhancedQueueExecutor.java:1622)
+[ERROR] 	at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1589)
+[ERROR] 	at java.base/java.lang.Thread.run(Thread.java:1583)
+[ERROR] 	at org.jboss.threads.JBossThread.run(JBossThread.java:501)
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.

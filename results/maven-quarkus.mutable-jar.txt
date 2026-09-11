@@ -1,0 +1,106 @@
+case:     maven-quarkus
+jar type: mutable-jar
+build:    SUCCESS
+
+--- probe ---
+PROBE|jarType=mutable-jar
+PROBE|jarTypeUsesFastJarLayout=true
+PROBE|outputTargetDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target
+PROBE|appArtifactPaths=[paths: /tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes;]
+PROBE|archiveRootResolvedPath=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes isDirectory=true
+PROBE|archiveRootDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes fileSystem=LinuxFileSystem
+PROBE|workspaceModule=<absent, falling back to output target>
+PROBE|resourcesOutputDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes
+PROBE|predicateRootArchiveIncludesOutput=true
+PROBE|emittedFile=META-INF/PROBE/emitted.txt
+PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes/META-INF/PROBE/late.txt
+
+--- archives ---
+target/quarkus-app/app/packaging-repro-maven-quarkus-1.0-SNAPSHOT.jar          VAADIN=197   late=1   emitted=0
+target/quarkus-app/lib/deployment/com.fasterxml.jackson.core.jackson-databind-2.22.1.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/commons-codec.commons-codec-1.21.0.jar       VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/commons-io.commons-io-2.21.0.jar             VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.nimbusds.nimbus-jose-jwt-10.7.jar        VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.flow-build-tools-25.2.6-shaded.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.flow-plugin-base-25.2.5.jar       VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.flow-polymer2lit-25.2.5.jar       VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.license-checker-3.1.1.jar         VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.open-8.5.0.5.jar                  VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.vaadin-prod-bundle-25.2.6.jar     VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.vaadin-quarkus-deployment-3.2.1.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/com.vaadin.vaadin-quarkus-extension-deployment-25.2.6.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.github.classgraph.classgraph-4.8.184.jar  VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.arc.arc-processor-3.33.0.jar      VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.gizmo.gizmo-1.10.1.jar            VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.gizmo.gizmo2-2.1.1.jar            VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-arc-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-arc-dev-3.33.0.jar        VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-arc-test-supplement-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-arc-test-supplement-decorator-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-bootstrap-app-model-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-bootstrap-core-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-bootstrap-json-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-builder-3.33.0.jar        VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-class-change-agent-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-core-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-credentials-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-devui-deployment-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-hibernate-validator-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-jackson-spi-3.33.0.jar    VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-kubernetes-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-mutiny-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-netty-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-security-spi-3.33.0.jar   VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-smallrye-context-propagation-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-smallrye-context-propagation-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-tls-registry-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-tls-registry-deployment-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-undertow-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-undertow-spi-3.33.0.jar   VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-vertx-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-vertx-deployment-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-vertx-http-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-vertx-http-deployment-spi-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-virtual-threads-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-websockets-client-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.quarkus.quarkus-websockets-deployment-3.33.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.smallrye.classfile.jdk-classfile-backport-26.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.smallrye.common.smallrye-common-process-2.16.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.smallrye.common.smallrye-common-resource-2.16.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.smallrye.jandex-3.5.3.jar                 VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/io.smallrye.jandex-gizmo2-3.5.3.jar          VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/net.bytebuddy.byte-buddy-agent-1.17.8.jar    VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.acme.packaging-probe-deployment-1.0-SNAPSHOT.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.aesh.aesh-2.8.2.jar                      VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.aesh.readline-2.6.jar                    VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.apache.commons.commons-compress-1.28.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.apache.commons.commons-lang3-3.20.0.jar  VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.apache.commons.commons-text-1.15.0.jar   VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.apiguardian.apiguardian-api-1.1.2.jar    VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.eclipse.sisu.org.eclipse.sisu.inject-0.9.0.M4.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.fusesource.jansi.jansi-2.4.0.jar         VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.graalvm.sdk.nativeimage-23.1.2.jar       VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.graalvm.sdk.word-23.1.2.jar              VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.jboss.forge.roaster.roaster-api-2.31.1.Final.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.jboss.forge.roaster.roaster-jdt-2.31.1.Final.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.jboss.logging.commons-logging-jboss-logging-2.0.0.Final.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.jboss.metadata.jboss-metadata-common-17.0.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.jboss.metadata.jboss-metadata-web-17.0.0.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.jupiter.junit-jupiter-6.0.3.jar    VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.jupiter.junit-jupiter-api-6.0.3.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.jupiter.junit-jupiter-engine-6.0.3.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.jupiter.junit-jupiter-params-6.0.3.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.platform.junit-platform-commons-6.0.3.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.platform.junit-platform-engine-6.0.3.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.junit.platform.junit-platform-launcher-6.0.3.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.opentest4j.opentest4j-1.3.0.jar          VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.ow2.asm.asm-9.9.1.jar                    VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.ow2.asm.asm-analysis-9.9.1.jar           VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.ow2.asm.asm-commons-9.9.1.jar            VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.ow2.asm.asm-tree-9.9.1.jar               VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.ow2.asm.asm-util-9.9.1.jar               VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/org.snakeyaml.snakeyaml-engine-3.0.1.jar     VAADIN=0     late=0   emitted=0
+target/quarkus-app/lib/deployment/tools.jackson.dataformat.jackson-dataformat-yaml-3.1.5.jar VAADIN=0     late=0   emitted=0
+target/quarkus-app/quarkus/generated-bytecode.jar                              VAADIN=197   late=0   emitted=1
+target/quarkus-app/quarkus-run.jar                                             VAADIN=0     late=0   emitted=0
+target/quarkus-app/quarkus/transformed-bytecode.jar                            VAADIN=0     late=0   emitted=0

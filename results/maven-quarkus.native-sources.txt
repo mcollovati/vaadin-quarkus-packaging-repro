@@ -1,0 +1,19 @@
+case:     maven-quarkus
+jar type: native-sources
+build:    SUCCESS
+
+--- probe ---
+PROBE|jarType=fast-jar
+PROBE|jarTypeUsesFastJarLayout=true
+PROBE|outputTargetDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target
+PROBE|appArtifactPaths=[paths: /tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes;]
+PROBE|archiveRootResolvedPath=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes isDirectory=true
+PROBE|archiveRootDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes fileSystem=LinuxFileSystem
+PROBE|workspaceModule=<absent, falling back to output target>
+PROBE|resourcesOutputDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes
+PROBE|predicateRootArchiveIncludesOutput=true
+PROBE|emittedFile=META-INF/PROBE/emitted.txt
+PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/maven-quarkus/target/classes/META-INF/PROBE/late.txt
+
+--- archives ---
+target/native-sources/packaging-repro-maven-quarkus-1.0-SNAPSHOT-runner.jar    VAADIN=387   late=1   emitted=1

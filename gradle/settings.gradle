@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    plugins {
+        id 'io.quarkus' version "${quarkusVersion}"
+    }
+}
+
+rootProject.name = 'packaging-repro-gradle'

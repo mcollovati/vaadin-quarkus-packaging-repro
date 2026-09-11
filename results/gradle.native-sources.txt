@@ -1,0 +1,23 @@
+case:     gradle
+jar type: native-sources
+build:    SUCCESS
+
+--- probe ---
+PROBE|jarType=fast-jar
+PROBE|jarTypeUsesFastJarLayout=true
+PROBE|outputTargetDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build
+PROBE|appArtifactPaths=[paths: /tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/classes/java/main;/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/resources/main;]
+PROBE|archiveRootResolvedPath=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/classes/java/main isDirectory=true
+PROBE|archiveRootResolvedPath=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/resources/main isDirectory=true
+PROBE|archiveRootDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/classes/java/main fileSystem=LinuxFileSystem
+PROBE|archiveRootDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/resources/main fileSystem=LinuxFileSystem
+PROBE|workspaceModuleBuildDir=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build
+PROBE|mainSourcesOutputDir=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/classes/java/main
+PROBE|resourcesOutputDirectory=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/resources/main
+PROBE|predicateRootArchiveIncludesOutput=true
+PROBE|emittedFile=META-INF/PROBE/emitted.txt
+PROBE|lateFile=/tmp/reproducers/vaadin-quarkus-packaging-repro/gradle/build/resources/main/META-INF/PROBE/late.txt
+
+--- archives ---
+build/libs/packaging-repro-gradle.jar                                          VAADIN=0     late=0   emitted=0
+build/native-sources/packaging-repro-gradle-unspecified-runner.jar             VAADIN=387   late=1   emitted=1
