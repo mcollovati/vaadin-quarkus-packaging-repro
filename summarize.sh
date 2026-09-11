@@ -18,12 +18,12 @@ for report in "$root_dir"/results/*.txt; do
     root_kind=$(grep -q 'isDirectory=true' "$report" && echo directory || echo archive)
     grep -q '^PROBE|archiveRootResolvedPath' "$report" || root_kind='-'
 
-    # The emitter is load-bearing wherever an archive carries the emitted
+    # The emitter is required wherever an archive carries the emitted
     # marker but not the late one: nothing else delivered the bundle there.
     if grep -qE 'late=[1-9].*emitted=0|late=[1-9]' "$report"; then
         emitter=redundant
     elif grep -q 'emitted=1' "$report"; then
-        emitter='load-bearing'
+        emitter='required'
     else
         emitter='-'
     fi

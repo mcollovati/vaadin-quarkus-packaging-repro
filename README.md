@@ -75,7 +75,7 @@ single build step mirrors, without Vaadin, what `buildFrontendTask` does:
   of the predicate proposed for #337.
 
 Which of the two files reaches the packaged application then answers, per cell,
-whether the emitter is load-bearing — and the `META-INF/VAADIN` counts show the
+whether the emitter is required — and the `META-INF/VAADIN` counts show the
 same thing for the real Vaadin bundle.
 
 ## Running it
@@ -108,11 +108,11 @@ same build.
 | maven-jar | mutable-jar | SUCCESS | directory | true | redundant |
 | maven-jar | native-sources | SUCCESS | directory | true | redundant |
 | maven-jar | uber-jar | SUCCESS | directory | true | redundant |
-| maven-jar-no-extensions | fast-jar | SUCCESS | archive | false | load-bearing |
-| maven-jar-no-extensions | legacy-jar | SUCCESS | archive | false | load-bearing |
-| maven-jar-no-extensions | mutable-jar | SUCCESS | archive | false | load-bearing |
-| maven-jar-no-extensions | native-sources | SUCCESS | archive | false | load-bearing |
-| maven-jar-no-extensions | uber-jar | SUCCESS | archive | false | load-bearing |
+| maven-jar-no-extensions | fast-jar | SUCCESS | archive | false | required |
+| maven-jar-no-extensions | legacy-jar | SUCCESS | archive | false | required |
+| maven-jar-no-extensions | mutable-jar | SUCCESS | archive | false | required |
+| maven-jar-no-extensions | native-sources | SUCCESS | archive | false | required |
+| maven-jar-no-extensions | uber-jar | SUCCESS | archive | false | required |
 | maven-jar-no-generate-code | fast-jar | FAILURE | archive | false | - |
 | maven-jar-no-generate-code | legacy-jar | FAILURE | archive | false | - |
 | maven-jar-no-generate-code | mutable-jar | FAILURE | archive | false | - |
@@ -125,7 +125,7 @@ same build.
 | maven-quarkus | uber-jar | SUCCESS | directory | true | redundant |
 
 "emitter: redundant" means an archive carried the bundle without the emitter
-having put it there; "load-bearing" means the emitted copy was the only one.
+having put it there. "required" means the emitted copy was the only one.
 
 The predicate agrees with the outcome in every cell, including the five where
 the build fails before packaging.
@@ -226,8 +226,8 @@ boolean rootArchiveIncludesOutput = archiveRoot.getRootDirectories().stream()
 
 `ArchiveRootBuildItem` is an initial build item, so injecting it constrains
 nothing, and `Path.startsWith` is false across file systems - which is exactly
-the sealed-archive case. This reading is build-tool agnostic and handles Gradle's
-two root directories without special-casing.
+the sealed-archive case. This reading works the same under Maven and
+Gradle, and handles Gradle's two root directories without a special case.
 
 Two constraints on that fix, both measured in **Removing the emitter for real**
 above: the `BuildProducer<GeneratedResourceBuildItem>` parameter has to stay,
