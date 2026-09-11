@@ -21,6 +21,7 @@
 
         <vaadin.quarkus.version>3.2.1</vaadin.quarkus.version>
         <vaadin.version>25.2.6</vaadin.version>
+        <vaadin.flow.version>${vaadin.version}</vaadin.flow.version>
 
         <quarkus.platform.version>3.33.0</quarkus.platform.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
@@ -43,6 +44,21 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Imported before vaadin-bom so that vaadin.flow.version wins -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
+            <!-- flow-bom does not manage flow-plugin-base, and the extension
+                 brings it at its own Flow version, so it is pinned here too -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-plugin-base</artifactId>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-quarkus</artifactId>

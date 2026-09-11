@@ -34,6 +34,12 @@ dependencies {
     // implementation("com.vaadin:vaadin-jandex")
 }
 
+// flow-bom does not manage flow-plugin-base, and the extension brings it at
+// its own Flow version, so it is forced separately
+configurations.all {
+    resolutionStrategy.force "com.vaadin:flow-plugin-base:$flowVersion"
+}
+
 // Run against a locally built extension with
 // ./gradlew quarkusBuild -PvaadinQuarkusVersion=3.2-SNAPSHOT. mavenLocal() is
 // already first in the repository list, but the version has to be forced

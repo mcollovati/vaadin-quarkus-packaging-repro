@@ -4,7 +4,13 @@
 set -u
 
 root_dir="$(cd "$(dirname "$0")" && pwd)"
-results_dir="$root_dir/results"
+# Runs with a version override write elsewhere, so that they cannot overwrite
+# the committed results, which come from the released extension.
+if [ -n "${VAADIN_QUARKUS_VERSION:-}" ] || [ -n "${FLOW_VERSION:-}" ]; then
+    results_dir="$root_dir/results-local"
+else
+    results_dir="$root_dir/results"
+fi
 mkdir -p "$results_dir"
 
 all_cases="maven-quarkus maven-jar maven-jar-no-extensions maven-jar-no-generate-code gradle"
@@ -103,3 +109,6 @@ done
 
 echo
 echo "reports written to $results_dir"
+if [ "$results_dir" != "$root_dir/results" ]; then
+    echo "summarize them with: ./summarize.sh ${results_dir##*/}"
+fi

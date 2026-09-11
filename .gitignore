@@ -19,3 +19,4 @@ vite.generated.ts
 *.iml
 .DS_Store
 emitter-removal/.work/
+results-local/

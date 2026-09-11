@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
-# Condenses results/ into one Markdown table row per cell.
+# Condenses a report directory into one Markdown table row per cell.
+#
+# Usage: ./summarize.sh [results|results-local]
 set -u
 
 root_dir="$(cd "$(dirname "$0")" && pwd)"
 
+# Which report directory to read: results/ by default, results-local/ for runs
+# made with a version override.
+reports_dir="$root_dir/${1:-results}"
+
 printf '| case | jar type | build | archive root | predicate | emitter | single copy |\n'
 printf '|---|---|---|---|---|---|---|\n'
 
-for report in "$root_dir"/results/*.txt; do
+for report in "$reports_dir"/*.txt; do
     [ -e "$report" ] || continue
     name=$(basename "$report" .txt)
     case_name="${name%.*}"

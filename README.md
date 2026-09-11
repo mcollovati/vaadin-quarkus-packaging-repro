@@ -115,12 +115,24 @@ VAADIN_QUARKUS_VERSION=3.2-SNAPSHOT FLOW_VERSION=25.2-SNAPSHOT ./run-all.sh mave
 `vaadin-quarkus-parent` when it reads the extension's pom, and without it the
 build fails with "Could not find artifact com.vaadin:vaadin-quarkus-parent".
 
-`FLOW_VERSION` has to match the Flow version the extension was built against,
-which its parent pom declares as `vaadin.flow.version`. If they differ, the
-build fails during the frontend build with a `NoSuchMethodError` from
-`flow-plugin-base`, because that comes from the extension while `flow-server`
-comes from the application. The Vaadin prereleases repository is already
-declared, so a Flow snapshot is downloaded if it is not built locally.
+`FLOW_VERSION` sets the Flow version the applications build against. The Vaadin
+prereleases repository is already declared, so a snapshot or a prerelease is
+downloaded if it is not built locally.
+
+`FLOW_VERSION` moves `flow-server` and the other artifacts `flow-bom` manages,
+and `flow-plugin-base`, which `flow-bom` does not manage and which the
+extension brings at its own Flow version. Both have to move together: the
+plugin calls into the server, and a mix of the two fails during the frontend
+build with a `NoSuchMethodError`, for example
+
+```
+NoSuchMethodError: Options.withMinimumFrontendPackageAgeDays(int)
+    at BuildFrontendUtil.runNodeUpdater(BuildFrontendUtil.java:381)
+```
+
+A run with either variable set writes its reports to `results-local/`, which is
+not checked in, so it cannot overwrite the results of the released extension in
+`results/`. Read it with `./summarize.sh results-local`.
 
 Both variables are passed to a single project as well:
 

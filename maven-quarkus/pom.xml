@@ -56,6 +56,13 @@
                 <scope>import</scope>
                 <version>${vaadin.flow.version}</version>
             </dependency>
+            <!-- flow-bom does not manage flow-plugin-base, and the extension
+                 brings it at its own Flow version, so it is pinned here too -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-plugin-base</artifactId>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-quarkus</artifactId>
