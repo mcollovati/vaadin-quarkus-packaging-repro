@@ -130,6 +130,40 @@ having put it there; "load-bearing" means the emitted copy was the only one.
 The predicate agrees with the outcome in every cell, including the five where
 the build fails before packaging.
 
+## Removing the emitter for real
+
+The table above infers "redundant" from a probe marker. `emitter-removal/`
+settles it by actually removing the emitter: it builds four variants of the
+extension at tag 3.2.1 and packages the same `maven-jar`-shaped application with
+each.
+
+```bash
+./emitter-removal/run.sh      # clones vaadin/quarkus at 3.2.1 into .work/
+```
+
+| variant | what changed | `app/<artifact>.jar` | verdict |
+|---|---|---|---|
+| `baseline` | nothing | 197 | bundle present, and duplicated in `generated-bytecode.jar` |
+| `no-emitter` | the `emitGeneratedFiles(emitter)` call removed, the `BuildProducer<GeneratedResourceBuildItem>` parameter kept | **197** | bundle present, duplication gone |
+| `no-producer` | the call *and* the parameter removed | — | **build fails**: "does not produce any build item and thus will never get executed" |
+| `produce-artifact` | as `no-producer`, plus `@Produce(ArtifactResultBuildItem.class)` to keep the step alive | **3** | **bundle missing** - only `flow-build-info.json`, written earlier by `prepareFrontend`, made it in |
+
+So the emitter really is redundant as a *source of files* in this shape. But the
+`BuildProducer<GeneratedResourceBuildItem>` parameter is not redundant at all:
+producing that item is what puts `buildFrontendTask` before `JarResultBuildStep`
+in the build graph, because the jar step consumes
+`List<GeneratedResourceBuildItem>`. Nothing has to actually be produced -
+declaring the parameter is enough.
+
+Take the parameter away and there are two outcomes, neither good. On Quarkus 3.33
+the build fails outright. Replace it with `@Produce(ArtifactResultBuildItem.class)`
+- which is exactly what that error message suggests - and the step runs
+*unordered against packaging*: the jar is assembled while the Vaadin build is
+still working, and the application ships without its bundle. The comment on the
+parameter today says it is there "to make sure the build step gets executed",
+which undersells it; it is there to make sure the step is executed **before the
+application is packaged**.
+
 ## What this shows
 
 **1. The duplication is not specific to `quarkus` packaging.** The official
@@ -151,9 +185,14 @@ boolean rootArchiveIncludesOutput = archiveRoot.getRootDirectories().stream()
 ```
 
 `ArchiveRootBuildItem` is an initial build item, so injecting it constrains
-nothing, and `Path.startsWith` is false across file systems — which is exactly
+nothing, and `Path.startsWith` is false across file systems - which is exactly
 the sealed-archive case. This reading is build-tool agnostic and handles Gradle's
 two root directories without special-casing.
+
+Whatever the condition, the `BuildProducer<GeneratedResourceBuildItem>` parameter
+has to stay: it is the build-graph edge that puts the Vaadin build before
+packaging, and dropping it ships an application without its bundle. See
+**Removing the emitter for real** above.
 
 **3. A missing `generate-code` goal is a separate bug.** With only the `build`
 goal bound, `VaadinPlugin.of` falls back to `WorkspaceInfo.load`, which returns

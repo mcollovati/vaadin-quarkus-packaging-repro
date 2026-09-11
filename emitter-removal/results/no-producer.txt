@@ -1,0 +1,12 @@
+variant: no-producer
+build:   FAILURE
+
+--- archives ---
+target/packaging-repro-emitter-removal-1.0-SNAPSHOT.jar                        VAADIN=0     late=0   emitted=0
+
+--- build failure ---
+[ERROR] Failed to execute goal io.quarkus:quarkus-maven-plugin:3.33.0:build (default) on project packaging-repro-emitter-removal: Failed to build quarkus application: Build step 'com.vaadin.quarkus.deployment.VaadinQuarkusProcessor#buildFrontendTask' does not produce any build item and thus will never get executed. Either change the return type of the method to a build item type, add a parameter of type BuildProducer<[some build item type]>/Consumer<[some build item type]>, or annotate the method with @Produces. Use @Produce(ArtifactResultBuildItem.class) if you want to always execute this step. -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 

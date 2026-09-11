@@ -1,0 +1,9 @@
+variant: no-emitter
+build:   SUCCESS
+
+--- archives ---
+target/packaging-repro-emitter-removal-1.0-SNAPSHOT.jar                        VAADIN=0     late=0   emitted=0
+target/quarkus-app/app/packaging-repro-emitter-removal-1.0-SNAPSHOT.jar        VAADIN=197   late=1   emitted=0
+target/quarkus-app/quarkus/generated-bytecode.jar                              VAADIN=0     late=0   emitted=1
+target/quarkus-app/quarkus-run.jar                                             VAADIN=0     late=0   emitted=0
+target/quarkus-app/quarkus/transformed-bytecode.jar                            VAADIN=0     late=0   emitted=0
