@@ -133,12 +133,13 @@ the build fails before packaging.
 ## Removing the emitter for real
 
 The table above infers "redundant" from a probe marker. `emitter-removal/`
-settles it by actually removing the emitter: it builds four variants of the
+settles it by actually removing the emitter: it builds five variants of the
 extension at tag 3.2.1 and packages the same `maven-jar`-shaped application with
 each.
 
 ```bash
-./emitter-removal/run.sh      # clones vaadin/quarkus at 3.2.1 into .work/
+./emitter-removal/run.sh                          # clones vaadin/quarkus at 3.2.1 into .work/
+APPS="app app-no-extensions" ./emitter-removal/run.sh conditional
 ```
 
 | variant | what changed | `app/<artifact>.jar` | verdict |
@@ -147,6 +148,46 @@ each.
 | `no-emitter` | the `emitGeneratedFiles(emitter)` call removed, the `BuildProducer<GeneratedResourceBuildItem>` parameter kept | **197** | bundle present, duplication gone |
 | `no-producer` | the call *and* the parameter removed | — | **build fails**: "does not produce any build item and thus will never get executed" |
 | `produce-artifact` | as `no-producer`, plus `@Produce(ArtifactResultBuildItem.class)` to keep the step alive | **3** | **bundle missing** - only `flow-build-info.json`, written earlier by `prepareFrontend`, made it in |
+| `conditional` | `patches/conditional.patch` — the proposed fix, on top of #335 | **196** + 1 | one copy of everything, token included |
+
+### The `conditional` variant
+
+`patches/conditional.patch` is the fix as it would be written, applied on top of
+vaadin/quarkus#335 (which deletes the token file from the build output directory
+once the frontend build is done). It builds the emitter from the archive root:
+
+```java
+boolean packagedFromDirectory = archiveRoot.getRootDirectories().stream()
+        .anyMatch(generatedResourcesDirectory::startsWith);
+if (!packagedFromDirectory) {
+    return (path, content) -> producer
+            .produce(new GeneratedResourceBuildItem(path, content));
+}
+return (path, content) -> {
+    if (path.endsWith("/" + FrontendUtils.TOKEN_FILE)) {
+        producer.produce(new GeneratedResourceBuildItem(path, content));
+    }
+};
+```
+
+The token has to be emitted either way: #335 deletes it from the output
+directory, so packaging cannot pick it up from there any more. Emitting nothing
+at all would ship an application with no `flow-build-info.json`, which is a worse
+failure than the duplication. The rule is therefore *emit exactly what packaging
+will not pick up from the output directory*.
+
+Measured on both sides of the predicate:
+
+| app shape | archive root | `app/<artifact>.jar` | `generated-bytecode.jar` |
+|---|---|---|---|
+| `app` (`<extensions>true</extensions>`) | directory | 196 — the bundle | 3 — the token and its two directory entries |
+| `app-no-extensions` | sealed jar | 0 | 197 — everything |
+
+One copy of every file in both, with the token present exactly once. The
+duplication is gone, the sealed-archive shape is unaffected, and #332's "first
+match of '2' possible" warning goes away as a side effect, since there is no
+longer a second `flow-build-info.json` to disagree with.
+
 
 So the emitter really is redundant as a *source of files* in this shape. But the
 `BuildProducer<GeneratedResourceBuildItem>` parameter is not redundant at all:
@@ -172,12 +213,11 @@ the bundle exactly like the `quarkus`-packaged project. Under `uber-jar` the two
 copies land in the *same* archive as duplicate zip entries: 387 `META-INF/VAADIN`
 entries against 197 in the same build without the emitter.
 
-**2. The emitter cannot simply be removed.** `maven-jar-no-extensions` depends on
-it entirely - nothing else puts the bundle into that application - and
-`maven-jar-no-generate-code` would too, if its build got as far as packaging. In
-both the Maven artifact itself never receives the bundle either. A conditional
-emitter is the only safe fix, and the archive root is what the condition has to
-read:
+**2. The emitter cannot simply be removed, but it can be made conditional.**
+`maven-jar-no-extensions` depends on it entirely - nothing else puts the bundle
+into that application - and `maven-jar-no-generate-code` would too, if its build
+got as far as packaging. In both the Maven artifact itself never receives the
+bundle either. The archive root is what the condition has to read:
 
 ```java
 boolean rootArchiveIncludesOutput = archiveRoot.getRootDirectories().stream()
@@ -189,10 +229,12 @@ nothing, and `Path.startsWith` is false across file systems - which is exactly
 the sealed-archive case. This reading is build-tool agnostic and handles Gradle's
 two root directories without special-casing.
 
-Whatever the condition, the `BuildProducer<GeneratedResourceBuildItem>` parameter
-has to stay: it is the build-graph edge that puts the Vaadin build before
-packaging, and dropping it ships an application without its bundle. See
-**Removing the emitter for real** above.
+Two constraints on that fix, both measured in **Removing the emitter for real**
+above: the `BuildProducer<GeneratedResourceBuildItem>` parameter has to stay,
+because it is the build-graph edge that puts the Vaadin build before packaging;
+and the build info token has to be emitted on both branches, because #335 deletes
+it from the output directory. `emitter-removal/patches/conditional.patch` is that
+fix, and it measures clean on both sides of the predicate.
 
 **3. A missing `generate-code` goal is a separate bug.** With only the `build`
 goal bound, `VaadinPlugin.of` falls back to `WorkspaceInfo.load`, which returns

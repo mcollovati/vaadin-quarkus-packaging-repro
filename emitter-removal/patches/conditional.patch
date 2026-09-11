@@ -1,0 +1,138 @@
+diff --git a/deployment/src/main/java/com/vaadin/quarkus/deployment/VaadinQuarkusProcessor.java b/deployment/src/main/java/com/vaadin/quarkus/deployment/VaadinQuarkusProcessor.java
+index d27fb32..2464520 100644
+--- a/deployment/src/main/java/com/vaadin/quarkus/deployment/VaadinQuarkusProcessor.java
++++ b/deployment/src/main/java/com/vaadin/quarkus/deployment/VaadinQuarkusProcessor.java
+@@ -15,6 +15,7 @@
+  */
+ package com.vaadin.quarkus.deployment;
+ 
++import java.nio.file.Path;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.List;
+@@ -45,6 +46,7 @@ import io.quarkus.deployment.annotations.BuildStep;
+ import io.quarkus.deployment.annotations.ExecutionTime;
+ import io.quarkus.deployment.annotations.Produce;
+ import io.quarkus.deployment.annotations.Record;
++import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
+ import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+ import io.quarkus.deployment.builditem.FeatureBuildItem;
+ import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
+@@ -70,6 +72,7 @@ import org.jboss.jandex.IndexView;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ 
++import com.vaadin.flow.internal.FrontendUtils;
+ import com.vaadin.flow.router.HasErrorParameter;
+ import com.vaadin.flow.router.Route;
+ import com.vaadin.flow.router.RouterLayout;
+@@ -356,11 +359,14 @@ class VaadinQuarkusProcessor {
+     @BuildStep(onlyIf = IsNormal.class)
+     void buildFrontendTask(CurateOutcomeBuildItem outcomeBuildItem,
+             OutputTargetBuildItem outputTarget,
++            ArchiveRootBuildItem archiveRoot,
+             VaadinBuildTimeConfig vaadinConfig,
+             QuarkusBuildCloseablesBuildItem closeablesBuildItem,
+ 
+-            // Parameter used only to make sure the build step gets executed
+-            @SuppressWarnings("unused") BuildProducer<GeneratedResourceBuildItem> producer)
++            // Declaring this parameter is what orders this build step before
++            // JarResultBuildStep, which consumes GeneratedResourceBuildItem.
++            // It has to stay even when nothing is produced through it.
++            BuildProducer<GeneratedResourceBuildItem> producer)
+             throws BuildException {
+         if (vaadinConfig.enabled()) {
+             VaadinPlugin vaadinPlugin = VaadinPlugin.of(vaadinConfig,
+@@ -370,8 +376,8 @@ class VaadinQuarkusProcessor {
+ 
+             // Allows the build to register additional files to be packaged into
+             // the application
+-            BiConsumer<String, byte[]> emitter = (path, content) -> producer
+-                    .produce(new GeneratedResourceBuildItem(path, content));
++            BiConsumer<String, byte[]> emitter = createEmitter(archiveRoot,
++                    vaadinPlugin.generatedResourcesDirectory(), producer);
+             vaadinPlugin.buildFrontend(emitter);
+ 
+             // Register a task to clean the generated files
+@@ -379,6 +385,43 @@ class VaadinQuarkusProcessor {
+         }
+     }
+ 
++    /**
++     * Builds the emitter that registers generated Vaadin files with the
++     * application.
++     * <p>
++     * </p>
++     * Quarkus packages the application from the archive root. When that root is
++     * the directory the Vaadin build writes into, packaging already picks the
++     * files up and emitting them again only adds a second copy to the artifact.
++     * When the root is an archive the build tool sealed before augmentation
++     * started, emitting is the only way the files reach the application.
++     * <p>
++     * </p>
++     * The build info token file is emitted either way, because it is deleted
++     * from the build output directory once the frontend build is done.
++     */
++    private static BiConsumer<String, byte[]> createEmitter(
++            ArchiveRootBuildItem archiveRoot, Path generatedResourcesDirectory,
++            BuildProducer<GeneratedResourceBuildItem> producer) {
++        // Path.startsWith is false across FileSystems, so a mounted ZipFS root
++        // never matches - which is exactly the sealed archive case.
++        boolean packagedFromDirectory = archiveRoot.getRootDirectories().stream()
++                .anyMatch(generatedResourcesDirectory::startsWith);
++        if (!packagedFromDirectory) {
++            return (path, content) -> producer
++                    .produce(new GeneratedResourceBuildItem(path, content));
++        }
++        LOG.debug(
++                "Vaadin generated resources are packaged from {}, emitting only the build info token file.",
++                generatedResourcesDirectory);
++        return (path, content) -> {
++            if (path.endsWith("/" + FrontendUtils.TOKEN_FILE)) {
++                producer.produce(
++                        new GeneratedResourceBuildItem(path, content));
++            }
++        };
++    }
++
+     @BuildStep
+     @Record(ExecutionTime.RUNTIME_INIT)
+     void setupPush(ServletDeploymentManagerBuildItem deployment,
+diff --git a/deployment/src/main/java/com/vaadin/quarkus/deployment/vaadinplugin/VaadinPlugin.java b/deployment/src/main/java/com/vaadin/quarkus/deployment/vaadinplugin/VaadinPlugin.java
+index dbff096..e5cb0ee 100644
+--- a/deployment/src/main/java/com/vaadin/quarkus/deployment/vaadinplugin/VaadinPlugin.java
++++ b/deployment/src/main/java/com/vaadin/quarkus/deployment/vaadinplugin/VaadinPlugin.java
+@@ -195,6 +195,33 @@ public final class VaadinPlugin {
+         pluginAdapter.logInfo("Build frontend completed in " + ms + " ms.");
+ 
+         emitGeneratedFiles(emitter);
++        removeTokenFile();
++    }
++
++    /**
++     * The directory the Vaadin build writes its generated resources into.
++     *
++     * @return the generated resources directory.
++     */
++    public Path generatedResourcesDirectory() {
++        return pluginAdapter.servletResourceOutputDirectory().toPath();
++    }
++
++    /**
++     * Deletes the build info token file from the build output directory, as
++     * vaadin/quarkus#335 does.
++     *
++     * @throws BuildException
++     *             if the token file cannot be deleted.
++     */
++    void removeTokenFile() throws BuildException {
++        try {
++            BuildFrontendUtil.removeBuildFile(pluginAdapter);
++        } catch (IOException e) {
++            throw new BuildException(
++                    "Failed to delete the Vaadin build info token file from the build output directory.",
++                    e, List.of());
++        }
+     }
+ 
+     private void emitGeneratedFiles(BiConsumer<String, byte[]> emitter)

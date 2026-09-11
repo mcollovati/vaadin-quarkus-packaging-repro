@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds four variants of the Vaadin Quarkus extension at tag 3.2.1 and, for
+# Builds five variants of the Vaadin Quarkus extension at tag 3.2.1 and, for
 # each, packages the same application with it. This answers directly - by
 # removing the emitter rather than by inferring from a probe marker - whether
 # the bundle still reaches the packaged application.
@@ -10,16 +10,26 @@
 #   no-producer       the call and the parameter both removed
 #   produce-artifact  the call and the parameter removed, the build step kept
 #                     alive with @Produce(ArtifactResultBuildItem.class)
+#   conditional       the proposed fix: patches/conditional.patch, which emits
+#                     only what packaging will not pick up from the output
+#                     directory, on top of vaadin/quarkus#335
 #
-# The app is the `maven-jar` shape: classic <packaging>jar</packaging> with
-# <extensions>true</extensions> and generate-code bound, i.e. what
-# base-starter-flow-quarkus ships.
+# The default app is the `maven-jar` shape: classic <packaging>jar</packaging>
+# with <extensions>true</extensions> and generate-code bound, i.e. what
+# base-starter-flow-quarkus ships - the shape where the archive root is a live
+# directory. APPS selects which apps to package, for instance
+#
+#   APPS="app app-no-extensions" ./run.sh conditional
+#
+# to check both sides of the predicate: app-no-extensions drops
+# <extensions>true</extensions>, which is the shape whose archive root is a
+# sealed jar and which therefore still needs everything emitted.
 set -u
 
 here="$(cd "$(dirname "$0")" && pwd)"
 work="$here/.work"
 src="$work/quarkus-3.2.1"
-app="$here/app"
+apps="${APPS:-app}"
 reports="$here/results"
 processor="$src/deployment/src/main/java/com/vaadin/quarkus/deployment/VaadinQuarkusProcessor.java"
 plugin="$src/deployment/src/main/java/com/vaadin/quarkus/deployment/vaadinplugin/VaadinPlugin.java"
@@ -60,13 +70,16 @@ add_produce_artifact() {
     ' "$processor"
 }
 
-for variant in baseline no-emitter no-producer produce-artifact; do
+variants="${*:-baseline no-emitter no-producer produce-artifact conditional}"
+
+for variant in $variants; do
     echo "==> $variant"
     reset_sources
     case "$variant" in
         no-emitter)       drop_emitter_call ;;
         no-producer)      drop_emitter_call; drop_producer_parameter ;;
         produce-artifact) drop_emitter_call; drop_producer_parameter; add_produce_artifact ;;
+        conditional)      git -C "$src" apply "$here/patches/conditional.patch" ;;
     esac
 
     version="3.2.1-$variant"
@@ -77,27 +90,34 @@ for variant in baseline no-emitter no-producer produce-artifact; do
                -Dmaven.javadoc.skip=true -Dgpg.skip=true) \
         || { echo "    extension build failed"; continue; }
 
-    log=$(mktemp)
-    (cd "$app" && mvn -B clean package -DskipTests \
-        -Dvaadin.quarkus.version="$version") >"$log" 2>&1
-    status=$?
+    for app_name in $apps; do
+        app="$here/$app_name"
+        report="$reports/$variant.txt"
+        [ "$app_name" = app ] || report="$reports/$variant.$app_name.txt"
 
-    {
-        echo "variant: $variant"
-        echo "build:   $([ $status -eq 0 ] && echo SUCCESS || echo FAILURE)"
-        echo
-        echo "--- archives ---"
-        "$here/../inspect.sh" "$app"
-        if [ $status -ne 0 ]; then
+        log=$(mktemp)
+        (cd "$app" && mvn -B clean package -DskipTests \
+            -Dvaadin.quarkus.version="$version") >"$log" 2>&1
+        status=$?
+
+        {
+            echo "variant: $variant"
+            echo "app:     $app_name"
+            echo "build:   $([ $status -eq 0 ] && echo SUCCESS || echo FAILURE)"
             echo
-            echo "--- build failure ---"
-            grep -E '^\[ERROR\]' "$log" | head -5
-        fi
-    } >"$reports/$variant.txt"
-    rm -f "$log"
+            echo "--- archives ---"
+            "$here/../inspect.sh" "$app"
+            if [ $status -ne 0 ]; then
+                echo
+                echo "--- build failure ---"
+                grep -E '^\[ERROR\]' "$log" | head -5
+            fi
+        } >"$report"
+        rm -f "$log"
 
-    sed -n '1,2p' "$reports/$variant.txt" | tr '\n' ' '
-    echo
+        sed -n '1,3p' "$report" | tr '\n' ' '
+        echo
+    done
 done
 
 reset_sources
